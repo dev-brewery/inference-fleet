@@ -1,0 +1,150 @@
+services:
+  deeply-tuned-ai:
+    image: deeply-tuned-llama:qwen3-32b-q6k
+    restart: unless-stopped
+    runtime: nvidia
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - /storage/models/Qwen3-32B-GGUF:/models:ro
+      - ~/llm-hosts/deeply-tuned/start.sh:/start.sh:ro
+      - ~/llm-hosts/deeply-tuned/router:/router:ro
+
+    entrypoint: ["/bin/bash", "/start.sh"]
+
+    environment:
+      NVIDIA_VISIBLE_DEVICES: "all"
+      CUDA_VISIBLE_DEVICES: "0,1"
+      MODEL_ROOT: "/models"
+      MODEL_FILE: "Qwen3-32B-Q6_K.gguf"
+      SERVER_PORT: "8080"
+      CTX_SIZE: "16384"
+      THREADS: "16"
+      PARALLEL: "1"
+      BATCH_SIZE: "512"
+      UBATCH_SIZE: "256"
+      N_GPU_LAYERS: "999"
+      SPLIT_MODE: "row"
+      TENSOR_SPLIT: "24,24"
+      FLASH_ATTN: "off"
+      CACHE_TYPE_K: "f16"
+      CACHE_TYPE_V: "f16"
+      CHAT_TEMPLATE: ""
+      REASONING_FORMAT: "none"
+      REASONING_BUDGET: "0"
+      PROMPT_CACHE_RAM: "0"
+      SEED: "42"
+      ROUTER_GATEWAY_MODE: "off"
+      BACKEND_PORT: "8081"
+      GATEWAY_MAX_RETRIES: "2"
+      GATEWAY_FAIL_ON_VERIFY: "off"
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu, compute, utility]
+
+    cap_add:
+      - IPC_LOCK
+
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+
+  llm-gateway-litellm:
+    image: ghcr.io/berriai/litellm:main-stable
+    restart: unless-stopped
+    entrypoint: ["docker/prod_entrypoint.sh"]
+    command: ["--config=/app/config.yaml", "--host=0.0.0.0", "--port=4000"]
+    ports:
+      - "4000:4000"
+    volumes:
+      - ~/llm-hosts/llm-gateway/configs/litellm.config.yaml:/app/config.yaml:ro
+    environment:
+      REMOTE_CODER_MODEL_ID: "qwen3-coder-30b-a3b-instruct"
+      LITELLM_IMAGE: "ghcr.io/berriai/litellm:main-stable"
+      LITELLM_FALLBACK_ALIAS: "daily-fallback"
+      LOCAL_FALLBACK_MODEL_ID: "local"
+      LITELLM_REQUEST_TIMEOUT_S: "180"
+      REMOTE_CODER_API_BASE: "http://coder-host.lan:1234/v1"
+      GATEWAY_PORT: "4000"
+      LOCAL_LLM_API_BASE: "http://deeply-tuned-ai:8080/v1"
+      LITELLM_MODEL_ALIAS: "daily-driver"
+      LITELLM_CODER_ALIAS: "coder-primary"
+      LOCAL_PRIMARY_MODEL_ID: "local"
+      LITELLM_STREAM_TIMEOUT_S: "240"
+    depends_on:
+      - deeply-tuned-ai
+
+  prometheus:
+    image: prom/prometheus:latest
+    restart: always
+    entrypoint: ["/bin/prometheus"]
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+      - "--web.console.templates=/usr/share/prometheus/consoles"
+      - "--web.enable-lifecycle"
+    ports:
+      - "9090:9090"
+    volumes:
+      - ~/llm-hosts/qwen3.5/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ~/llm-hosts/qwen3.5/prometheus/data:/prometheus:rw
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    restart: always
+    entrypoint: ["/bin/node_exporter"]
+    command:
+      - "--path.procfs=/host/proc"
+      - "--path.sysfs=/host/sys"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($|/)"
+    ports:
+      - "9100:9100"
+    volumes:
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+      - /proc:/host/proc:ro
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    restart: always
+    entrypoint: ["/usr/bin/cadvisor", "-logtostderr"]
+    ports:
+      - "8081:8080"
+    volumes:
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+
+  grafana:
+    image: grafana/grafana:latest
+    restart: always
+    entrypoint: ["/run.sh"]
+    ports:
+      - "3000:3000"
+    volumes:
+      - ~/llm-hosts/qwen3.5/grafana/data:/var/lib/grafana:rw
+      - ~/llm-hosts/qwen3.5/grafana/provisioning:/etc/grafana/provisioning:rw
+    environment:
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_INSTALL_PLUGINS: ""
+      GF_SERVER_ROOT_URL: "http://localhost:3000"
+      GF_SECURITY_ADMIN_USER: "admin"
+      GF_SECURITY_ADMIN_PASSWORD: "CHANGE_ME"

@@ -1,0 +1,7 @@
+{
+  "openwebui_report_path": "/abs/path/openwebui_test_report_YYYYMMDDTHHMMSSZ.json",
+  "openwebui_tests_passed": true,
+  "stream_success_rate": 99.4,
+  "real_requests_pass_at_2": 82.1,
+  "gen_tps": 10.1
+}

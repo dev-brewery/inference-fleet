@@ -1,0 +1,11 @@
+{
+  "task_type": "math_logic",
+  "goal": "How many integers from 1 to 100 are divisible by 3 or 5?",
+  "constraints": [
+    "Return a concise answer with one short explanation sentence"
+  ],
+  "output_format": "One short paragraph",
+  "acceptance_checks": [
+    "Includes final count"
+  ]
+}

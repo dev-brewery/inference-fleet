@@ -1,0 +1,82 @@
+{
+  "ts": "20260305T121822Z",
+  "base_url": "http://openwebui-host.lan:3003",
+  "mode": "api",
+  "model": "Qwen3-32B-Q6_K.gguf",
+  "passed": 7,
+  "total": 7,
+  "success_rate": 100.0,
+  "results": [
+    {
+      "name": "version",
+      "passed": true,
+      "detail": "version=0.8.3",
+      "duration_ms": 4,
+      "meta": {
+        "status": 200,
+        "version": "0.8.3"
+      }
+    },
+    {
+      "name": "models",
+      "passed": true,
+      "detail": "models=2",
+      "duration_ms": 99,
+      "meta": {
+        "status": 200,
+        "sample_models": [
+          "Qwen3-32B-Q6_K.gguf",
+          "arena-model"
+        ]
+      }
+    },
+    {
+      "name": "chat_non_stream",
+      "passed": true,
+      "detail": "non-stream response received",
+      "duration_ms": 489,
+      "meta": {
+        "status": 200,
+        "content": "READY"
+      }
+    },
+    {
+      "name": "chat_stream_once",
+      "passed": true,
+      "detail": "stream completed with [DONE]",
+      "duration_ms": 17666,
+      "meta": {
+        "status": 200,
+        "bytes": 46495
+      }
+    },
+    {
+      "name": "chat_stream_stability",
+      "passed": true,
+      "detail": "20/20 stream runs stable",
+      "duration_ms": 313178,
+      "meta": {
+        "runs": 20
+      }
+    },
+    {
+      "name": "tools_roundtrip",
+      "passed": true,
+      "detail": "tool_calls returned",
+      "duration_ms": 2960,
+      "meta": {
+        "tool_name": "calculator",
+        "arguments": "{\"expr\":\"2+2\"}"
+      }
+    },
+    {
+      "name": "tool_follow_up",
+      "passed": true,
+      "detail": "tool follow-up completed",
+      "duration_ms": 3829,
+      "meta": {
+        "final_answer": "The result of 2 + 2 is 4."
+      }
+    }
+  ]
+}

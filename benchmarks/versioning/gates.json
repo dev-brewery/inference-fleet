@@ -1,0 +1,6 @@
+{
+  "openwebui_tests_passed": true,
+  "stream_success_rate_min": 99.0,
+  "real_requests_pass_at_2_min": 80.0,
+  "gen_tps_min": 9.0
+}

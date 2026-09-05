@@ -1,0 +1,57 @@
+services:
+  # ============================================
+  # MAIN AI SERVICE - Qwen3-Next-Instruct (Conversation Specialist)
+  # ============================================
+  qwen3-next-instruct:
+    image: qwen3-server-local:latest
+    container_name: qwen3-next-instruct
+    restart: unless-stopped
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - /storage/models:/models:ro
+      - ~/llm-hosts/qwen3-next-instruct/start.sh:/start.sh:ro
+
+    entrypoint: ["/bin/sh", "/start.sh"]
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu, compute, utility]
+
+    runtime: nvidia
+
+    environment:
+      NVIDIA_VISIBLE_DEVICES: "all"
+      CUDA_VISIBLE_DEVICES: "0,1"
+      MALLOC_TRIM_THRESHOLD_: "0"
+      MALLOC_MMAP_THRESHOLD_: "131072"
+      MALLOC_ARENA_MAX: "2"
+      CTX_SIZE: "98304"
+      BATCH_SIZE: "16384"
+
+    cap_add:
+      - IPC_LOCK
+
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

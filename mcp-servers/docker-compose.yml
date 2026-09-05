@@ -1,0 +1,79 @@
+services:
+  # ============================================
+  # QDRANT MCP TOOL SERVER
+  # ============================================
+  # Vector search, collection management, document upsert
+  # Connects to Qdrant at localhost:6333 via host network
+
+  qdrant-mcp:
+    build:
+      context: ./qdrant-mcp
+    container_name: qdrant-mcp
+    restart: unless-stopped
+    network_mode: host
+
+    environment:
+      QDRANT_URL: "http://localhost:6333"
+      EMBEDDING_URL: "http://localhost:8090"
+      MCP_PORT: "8093"
+
+    cpus: "1"
+    mem_limit: 256m
+
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8093/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ============================================
+  # SYSTEM MCP TOOL SERVER
+  # ============================================
+  # GPU status, container list, disk usage, proxy health
+  # Needs Docker socket (read-only) and nvidia-smi
+
+  system-mcp:
+    build:
+      context: ./system-mcp
+    container_name: system-mcp
+    restart: unless-stopped
+    network_mode: host
+
+    environment:
+      PROXY_URL: "http://localhost:4000"
+      MCP_PORT: "8095"
+
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /usr/bin/docker:/usr/bin/docker:ro
+      - /storage:/storage:ro
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [utility]
+
+    cpus: "1"
+    mem_limit: 256m
+
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8095/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

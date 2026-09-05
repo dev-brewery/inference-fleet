@@ -1,0 +1,33 @@
+You are a senior Python engineer. Build a production-ready log summarizer CLI.
+
+Requirements:
+1) Input: newline-delimited JSON log file with fields: ts, level, service, message, request_id, latency_ms.
+2) Output:
+   - Summary report to stdout:
+     - total lines
+     - error/warn/info counts
+     - p50/p95/p99 latency
+     - top 10 services by error count
+     - top 10 recurring error signatures (normalize numbers/UUIDs)
+   - Optional --out report.json to write full structured report.
+3) CLI:
+   - command: python logsum.py --input app.log --out report.json
+   - flags: --since, --until (ISO timestamps), --service, --min-level
+4) Robustness:
+   - skip malformed JSON lines but count them
+   - handle missing fields safely
+   - process large files in streaming fashion (no full-file load)
+5) Tests:
+   - write pytest tests for parsing, filtering, percentiles, signature normalization, malformed lines
+   - include at least one integration test with a sample log fixture
+6) Deliverables:
+   - logsum.py
+   - tests/test_logsum.py
+   - brief README usage section
+7) Quality bar:
+   - clear structure, type hints, docstrings, deterministic tests, no external deps beyond stdlib + pytest
+
+Return:
+A) complete code blocks for each file
+B) exact commands to run tests and example CLI usage
+C) a short explanation of design choices

@@ -1,0 +1,7 @@
+{
+  "openwebui_report_path": "~/llm-hosts/deeply-tuned/openwebui-tests/results/openwebui_test_report_20260305T123933Z.json",
+  "openwebui_tests_passed": true,
+  "stream_success_rate": 100.0,
+  "real_requests_pass_at_2": 83.33,
+  "gen_tps": 13.65
+}

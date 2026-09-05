@@ -1,0 +1,54 @@
+services:
+  gemma4-dense-q6:
+    # Uses gemma4-server-local built from upstream ggml-org/llama.cpp (NOT ik_llama.cpp).
+    # Backend lives in gemma4-moe-q8/llama.cpp — see gemma4-moe-q8/build.sh for rationale.
+    image: gemma4-server-local:latest
+    container_name: gemma4-dense-q6-server
+    restart: unless-stopped
+
+    ports:
+      - "8080:8080"
+
+    volumes:
+      - /storage/models:/models:ro
+      - ~/llm-hosts/gemma4-dense-q6/start.sh:/start.sh:ro
+
+    entrypoint: ["/bin/sh", "/start.sh"]
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu, compute, utility]
+
+    runtime: nvidia
+
+    environment:
+      NVIDIA_VISIBLE_DEVICES: "all"
+      CUDA_VISIBLE_DEVICES: "0,1"
+      MALLOC_TRIM_THRESHOLD_: "0"
+      MALLOC_MMAP_THRESHOLD_: "131072"
+      MALLOC_ARENA_MAX: "2"
+
+    cap_add:
+      - IPC_LOCK
+
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"

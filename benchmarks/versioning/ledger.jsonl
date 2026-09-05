@@ -1,0 +1,8 @@
+{"ts_utc": "20260305T113940Z", "event": "candidate_created", "candidate_id": "20260305T113940Z_versioning-smoke", "label": "versioning-smoke"}
+{"ts_utc": "20260305T113946Z", "event": "candidate_evaluated", "candidate_id": "20260305T113940Z_versioning-smoke", "status": "pass", "failures": []}
+{"ts_utc": "20260305T113951Z", "event": "candidate_promoted", "candidate_id": "20260305T113940Z_versioning-smoke"}
+{"ts_utc": "20260305T115122Z", "event": "current_release_invalidated", "reason": "smoke candidate invalidated; awaiting OpenWebUI-evidenced release"}
+{"ts_utc": "20260305T115130Z", "event": "candidate_evaluated", "candidate_id": "20260305T113940Z_versioning-smoke", "status": "fail", "failures": ["openwebui report not found: /abs/path/openwebui_test_report_YYYYMMDDTHHMMSSZ.json"]}
+{"ts_utc": "20260305T115210Z", "event": "candidate_created", "candidate_id": "20260305T115210Z_candidate-001-openwebui", "label": "candidate-001-openwebui"}
+{"ts_utc": "20260305T124012Z", "event": "candidate_evaluated", "candidate_id": "20260305T115210Z_candidate-001-openwebui", "status": "pass", "failures": []}
+{"ts_utc": "20260305T124025Z", "event": "candidate_promoted", "candidate_id": "20260305T115210Z_candidate-001-openwebui"}

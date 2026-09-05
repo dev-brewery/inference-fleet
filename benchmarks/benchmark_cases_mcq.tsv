@@ -1,0 +1,21 @@
+id	answer	question	options
+logic_syllogism_1	B	All glibs are trons. No trons are draks. Can any glib be a drak?	A) Yes, always B) No, impossible C) Only if glib is not tron D) Cannot be determined
+labels_box_1	C	Three boxes are labeled APPLES, ORANGES, BOTH, and all labels are wrong. You draw one fruit from one box to relabel all boxes correctly. Which labeled box must you draw from?	A) APPLES B) ORANGES C) BOTH D) Any box works
+math_avg_speed_1	C	A car travels 120 km in 2 hours, then 60 km in 1 hour. What is average speed?	A) 50 km/h B) 55 km/h C) 60 km/h D) 65 km/h
+prob_coin_1	A	A fair coin is tossed 3 times. Probability of exactly 2 heads?	A) 3/8 B) 1/2 C) 1/4 D) 5/8
+logic_knights_1	A	A says: "B is a liar." B says: "We are the same type." Which assignment is consistent?	A) A knight, B liar B) A liar, B knight C) both knights D) both liars
+count_div_1	D	How many integers from 1 to 60 are divisible by 4 or 6?	A) 18 B) 19 C) 21 D) 20
+arith_expr_1	B	Compute 27*14 - 19*8.	A) 220 B) 226 C) 234 D) 242
+modular_1	A	What is 7^4 mod 10?	A) 1 B) 3 C) 7 D) 9
+set_union_1	B	In a class of 100 students, 62 take math, 48 take physics, and 20 take neither. How many take both?	A) 8 B) 30 C) 10 D) 42
+work_rate_1	A	A can finish a job in 6 hours and B in 8 hours. Together, how long for one job?	A) 24/7 hours B) 3 hours C) 3.5 hours D) 4 hours
+clock_angle_1	D	What is the smaller angle between clock hands at 3:30?	A) 90 B) 120 C) 150 D) 75
+graph_path_1	C	Edges: A-B=2, B-C=3, A-C=10, C-D=1, B-D=7. Shortest distance A->D?	A) 10 B) 7 C) 6 D) 8
+code_sum_1	B	Pseudo-code: s=0; for i=1..5: s=s+i. Final s?	A) 10 B) 15 C) 20 D) 25
+bayes_ppv_1	B	Disease prevalence=1%, test sensitivity=90%, specificity=90%. If test is positive, probability patient has disease is closest to?	A) 9% B) 48% C) 90% D) 1%
+ratio_mix_1	A	Mix 30% acid solution and 50% acid solution to get 40%. What ratio (30%:50%)?	A) 1:1 B) 1:2 C) 2:1 D) 3:2
+logic_implication_1	C	When is implication P -> Q false?	A) P false, Q false B) P false, Q true C) P true, Q false D) P true, Q true
+algo_complexity_1	D	Which is typically O(n log n) average/worst?	A) Bubble sort B) Selection sort C) Insertion sort D) Merge sort
+prob_balls_1	B	Bag has 3 red and 2 blue balls. Draw 2 without replacement. Probability both red?	A) 1/5 B) 3/10 C) 2/5 D) 1/2
+schedule_cp_1	C	Task A=3h, B=2h depends on A, C=4h depends on A, D=2h depends on B and C. Minimum project time?	A) 7h B) 8h C) 9h D) 11h
+logic_set_2	A	Exactly one of these is true: (1) X is guilty (2) Y is guilty. If X is innocent, who is guilty?	A) Y B) X C) both D) neither

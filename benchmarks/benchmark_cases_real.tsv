@@ -1,0 +1,13 @@
+id	expected_type	user_request	required_regex	forbidden_regex
+incident_triage_1	checklist	Prod deploy at 09:10 UTC increased 5xx from 0.2% to 7%. Give me a concise incident response plan I can execute now.	rollback|error budget|logs?|metrics?|communicat|owner|timeline	
+sql_query_1	sql	Write a SQL query to list top 5 customers by total paid amount in the last 30 days from tables orders(id, customer_id, total, status, created_at) and customers(id, name).	sql|select|from orders|join customers|group by|order by|limit 5	
+bash_log_1	command	I have nginx access.log lines starting with ISO timestamps and status code in field 9. Give me one shell command to count 5xx responses in the last hour.	awk|date|5..|access\.log	
+bugfix_py_1	code	Fix this function so it returns True only for even positive integers: def is_even_positive(n): return n % 2 and n > 0	def is_even_positive|return|n % 2 == 0|n > 0	
+math_count_1	number	How many integers from 1 to 100 are divisible by 3 or 5? Return the result and one-sentence reasoning.	47	
+clock_angle_1	number	What is the smaller angle between hour and minute hands at 3:30?	75	
+rate_problem_1	number	A can do a job in 6 hours and B in 8 hours. Working together, how many minutes for one job?	205(\.[0-9]+)?|24/7 hours	
+box_logic_1	logic	Three boxes labeled APPLES, ORANGES, BOTH are all mislabeled. You can draw one fruit from one box. Which box do you draw from and why briefly?	both|mislabeled|relabel	
+api_security_1	security	We accidentally committed an API key publicly. Give immediate containment and remediation steps.	rotate|revoke|audit|secret|history|monitor	
+agent_router_1	architecture	Design a practical model-router policy for local inference with fast and smart models, minimizing swaps.	threshold|escalat|sticky|hyster|queue|fallback	
+json_plan_1	json	Create a JSON object with keys task, risks, checks for migrating a postgres database with near-zero downtime.	\{|"task"|"risks"|"checks"|replica|backup	
+code_review_1	review	Review this change: replaced parameterized SQL with f-strings for speed. Provide a concise code review comment.	sql injection|parameteriz|prepared|security	

@@ -1,0 +1,355 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "Failure Overview",
+      "type": "row"
+    },
+    {
+      "title": "Failure Rate by Kind",
+      "description": "Z.AI call failures grouped by failure kind (ECONNRESET, TIMEOUT, HTTP_500, etc.)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 1 },
+      "id": 1,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 20,
+            "pointSize": 5,
+            "showPoints": "auto"
+          },
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "sum by (failure_kind) (rate(smart_proxy_zai_calls_total{status!=\"200\",failure_kind!=\"none\"}[5m]))",
+          "legendFormat": "{{failure_kind}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Call Success vs Failure",
+      "description": "Z.AI call outcomes: successful (200) vs failed",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 1 },
+      "id": 2,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 30,
+            "stacking": { "mode": "normal" }
+          },
+          "unit": "reqps"
+        },
+        "overrides": [
+          { "matcher": { "id": "byFrameRefID", "options": "A" }, "properties": [{ "id": "color", "value": { "fixedColor": "green", "mode": "fixed" } }, { "id": "displayName", "value": "Success" }] },
+          { "matcher": { "id": "byFrameRefID", "options": "B" }, "properties": [{ "id": "color", "value": { "fixedColor": "red", "mode": "fixed" } }, { "id": "displayName", "value": "Failure" }] }
+        ]
+      },
+      "targets": [
+        { "expr": "sum(rate(smart_proxy_zai_calls_total{status=\"200\"}[5m]))", "refId": "A" },
+        { "expr": "sum(rate(smart_proxy_zai_calls_total{status!=\"200\"}[5m]))", "refId": "B" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 9 },
+      "id": 101,
+      "title": "Duration & Hangs",
+      "type": "row"
+    },
+    {
+      "title": "Call Duration Histogram (failures)",
+      "description": "Distribution of Z.AI call durations for FAILED requests. Top buckets (60/90/120s) lighting up indicates Z.AI hangs. Bottom buckets (0.5-2s) indicates fast failures (connection resets, quick errors).",
+      "type": "heatmap",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 10 },
+      "id": 3,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "calculate": false,
+            "cellGap": 2,
+            "cellRadius": 0,
+            "cellValues": {},
+            "color": { "exponent": 0.5, "fill": "dark-orange", "mode": "scheme", "reverse": false, "scale": "exponential", "scheme": "Oranges", "steps": 64 },
+            "exemplars": { "color": "rgba(255,0,255,0.7)" },
+            "filterValues": { "le": 1e-9 },
+            "legend": { "show": true },
+            "rowsFrame": { "layout": "auto" },
+            "showValue": "never",
+            "tooltip": { "show": true, "yHistogram": false },
+            "yAxis": { "axisPlacement": "left", "reverse": false, "unit": "s" }
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(smart_proxy_zai_call_duration_seconds_bucket{status!=\"200\"}[5m])) by (le)",
+          "format": "heatmap",
+          "refId": "A"
+        }
+      ],
+      "options": {
+        "calculate": false,
+        "cellGap": 2,
+        "cellRadius": 0,
+        "color": { "exponent": 0.5, "fill": "dark-orange", "mode": "scheme", "reverse": false, "scale": "exponential", "scheme": "Oranges", "steps": 64 },
+        "exemplars": { "color": "rgba(255,0,255,0.7)" },
+        "filterValues": { "le": 1e-9 },
+        "legend": { "show": true },
+        "rowsFrame": { "layout": "auto" },
+        "showValue": "never",
+        "tooltip": { "show": true, "yHistogram": false },
+        "yAxis": { "axisPlacement": "left", "reverse": false, "unit": "s" }
+      }
+    },
+    {
+      "title": "P95 Call Duration by Model",
+      "description": "95th percentile Z.AI call duration per model. Spikes toward 120s indicate timeout-busting slow responses.",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 10 },
+      "id": 4,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 10,
+            "thresholdsStyle": { "mode": "line" }
+          },
+          "unit": "s",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "transparent", "value": null },
+              { "color": "orange", "value": 90 },
+              { "color": "red", "value": 110 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(smart_proxy_zai_call_duration_seconds_bucket[5m])) by (le, model))",
+          "legendFormat": "{{model}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 18 },
+      "id": 102,
+      "title": "Circuit Breaker",
+      "type": "row"
+    },
+    {
+      "title": "Breaker Trips by Model",
+      "description": "Number of times the circuit breaker tripped (model exceeded 5 failures in 60s window)",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 19 },
+      "id": 5,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 50,
+            "lineWidth": 0
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(smart_proxy_zai_breaker_trips_total[5m])) by (model)",
+          "legendFormat": "{{model}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Breaker Skips (routed to fallback)",
+      "description": "Requests that bypassed the primary model because the breaker was open, routed directly to fallback",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 19 },
+      "id": 6,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 20
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(smart_proxy_zai_breaker_skips_total[5m])) by (from_model, to_model)",
+          "legendFormat": "{{from_model}} -> {{to_model}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 27 },
+      "id": 103,
+      "title": "Fallback Activity",
+      "type": "row"
+    },
+    {
+      "title": "Frontier Fallbacks",
+      "description": "Fallback events from primary Z.AI model to frontier_fallback target (e.g., glm-5.2 -> glm-5.1)",
+      "type": "barchart",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 28 },
+      "id": 7,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "orientation": "horizontal",
+        "groupWidth": 0.7,
+        "barWidth": 0.5,
+        "showValue": "auto"
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(smart_proxy_zai_frontier_fallbacks_total[1h])) by (from_model, to_model)",
+          "legendFormat": "{{from_model}} -> {{to_model}}",
+          "refId": "A",
+          "instant": true,
+          "format": "table"
+        }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 36 },
+      "id": 104,
+      "title": "Concurrency",
+      "type": "row"
+    },
+    {
+      "title": "Z.AI In-Flight Requests",
+      "description": "Number of Z.AI calls currently in flight across all models",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 37 },
+      "id": 8,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "fixed", "fixedColor": "super-light-blue" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "stepAfter",
+            "fillOpacity": 40
+          },
+          "unit": "short",
+          "min": 0
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "smart_proxy_zai_inflight",
+          "legendFormat": "inflight",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Breaker Unhealthy (current)",
+      "description": "Which Z.AI models currently have an open circuit breaker (1 = unhealthy, 0 = healthy)",
+      "type": "stat",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 37 },
+      "id": 9,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          },
+          "mappings": [
+            { "options": { "0": { "text": "HEALTHY", "color": "green" }, "1": { "text": "UNHEALTHY", "color": "red" } }, "type": "value" }
+          ]
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "horizontal",
+        "textMode": "auto",
+        "colorMode": "background"
+      },
+      "targets": [
+        {
+          "expr": "smart_proxy_zai_breaker_unhealthy",
+          "legendFormat": "{{model}}",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["llm-stack", "zai-health"],
+  "templating": { "list": [] },
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Z.AI Health",
+  "uid": "llm-zai-health",
+  "version": 1
+}

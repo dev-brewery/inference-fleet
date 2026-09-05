@@ -1,0 +1,51 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    monitor: 'llm-stack'
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # cAdvisor - Container metrics
+  - job_name: 'cadvisor'
+    static_configs:
+      - targets: ['localhost:8081']
+
+  # Node Exporter - Host metrics
+  - job_name: 'node'
+    static_configs:
+      - targets: ['localhost:9100']
+
+  # Active GPU model (whichever stack is running on port 8080)
+  - job_name: 'gpu-model'
+    static_configs:
+      - targets: ['localhost:8080']
+    metrics_path: '/metrics'
+
+  # Smart Proxy — Z.AI health, retries, breaker, call duration histogram
+  - job_name: 'smart-proxy'
+    static_configs:
+      - targets: ['localhost:4000']
+    metrics_path: '/metrics'
+
+  # Embedding Agent (always-on CPU)
+  - job_name: 'embedding'
+    static_configs:
+      - targets: ['localhost:8090']
+    metrics_path: '/metrics'
+
+  # Classifier Agent (always-on CPU)
+  - job_name: 'classifier'
+    static_configs:
+      - targets: ['localhost:8091']
+    metrics_path: '/metrics'
+
+  # Helper Agent (always-on CPU)
+  - job_name: 'helper'
+    static_configs:
+      - targets: ['localhost:8092']
+    metrics_path: '/metrics'

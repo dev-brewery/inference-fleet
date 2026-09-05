@@ -1,0 +1,44 @@
+FROM nvidia/cuda:12.4.1-devel-ubuntu22.04
+
+RUN apt-get update && apt-get install -y \
+    git \
+    build-essential \
+    cmake \
+    curl \
+    libcurl4-openssl-dev \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /src
+
+# Pin to a branch/tag/commit (default: latest master).
+ARG LLAMA_CPP_REF=master
+RUN git clone https://github.com/ggml-org/llama.cpp.git .
+RUN git checkout "${LLAMA_CPP_REF}"
+
+RUN cmake -B build \
+    -DGGML_CUDA=ON \
+    -DCMAKE_CUDA_ARCHITECTURES=61 \
+    -DGGML_AVX=ON \
+    -DGGML_AVX2=ON \
+    -DGGML_FMA=ON \
+    -DGGML_F16C=ON \
+    -DGGML_BMI2=ON \
+    -DGGML_CUDA_FORCE_MMQ=ON \
+    -DGGML_NATIVE=ON \
+    -DLLAMA_CURL=ON \
+    -DCMAKE_EXE_LINKER_FLAGS=-Wl,--allow-shlib-undefined \
+    -DCMAKE_SHARED_LINKER_FLAGS=-Wl,--allow-shlib-undefined \
+    -DCMAKE_BUILD_TYPE=Release
+
+RUN cmake --build build -j"$(nproc)" --target llama-server llama-cli llama-bench
+
+RUN mkdir -p /out && \
+    cp build/bin/llama-server /out/ && \
+    cp build/bin/llama-cli /out/ && \
+    cp build/bin/llama-bench /out/ && \
+    cp "$(find build -name 'libllama.so' | head -n1)" /out/libllama.so && \
+    cp "$(find build -name 'libggml.so' | head -n1)" /out/libggml.so && \
+    cp "$(find build -name 'libggml-base.so' | head -n1)" /out/libggml-base.so && \
+    cp "$(find build -name 'libggml-cpu.so' | head -n1)" /out/libggml-cpu.so && \
+    cp "$(find build -name 'libggml-cuda.so' | head -n1)" /out/libggml-cuda.so && \
+    cp "$(find build -name 'libmtmd.so' | head -n1)" /out/libmtmd.so

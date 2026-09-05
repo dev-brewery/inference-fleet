@@ -1,0 +1,67 @@
+services:
+  deeply-tuned-ai:
+    image: ${IMAGE_NAME:-deeply-tuned-llama}:${IMAGE_TAG:-latest}
+    pull_policy: never
+    container_name: ${CONTAINER_NAME:-deeply-tuned-server}
+    restart: unless-stopped
+    runtime: nvidia
+
+    ports:
+      - "${SERVER_PORT:-8080}:8080"
+
+    volumes:
+      - ${MODEL_ROOT:-/storage/models/Qwen3-32B-GGUF}:/models:ro
+      - ./start.sh:/start.sh:ro
+      - ./router:/router:ro
+
+    entrypoint: ["/bin/bash", "/start.sh"]
+
+    environment:
+      NVIDIA_VISIBLE_DEVICES: "all"
+      CUDA_VISIBLE_DEVICES: "0,1"
+      MODEL_ROOT: "/models"
+      MODEL_FILE: "${MODEL_FILE:-Qwen3-32B-Q6_K.gguf}"
+      SERVER_PORT: "8080"
+      CTX_SIZE: "${CTX_SIZE:-32768}"
+      THREADS: "${THREADS:-16}"
+      PARALLEL: "${PARALLEL:-1}"
+      BATCH_SIZE: "${BATCH_SIZE:-1024}"
+      UBATCH_SIZE: "${UBATCH_SIZE:-512}"
+      N_GPU_LAYERS: "${N_GPU_LAYERS:-999}"
+      SPLIT_MODE: "${SPLIT_MODE:-row}"
+      TENSOR_SPLIT: "${TENSOR_SPLIT:-24,24}"
+      FLASH_ATTN: "${FLASH_ATTN:-off}"
+      CACHE_TYPE_K: "${CACHE_TYPE_K:-f16}"
+      CACHE_TYPE_V: "${CACHE_TYPE_V:-f16}"
+      CHAT_TEMPLATE: "${CHAT_TEMPLATE:-}"
+      REASONING_FORMAT: "${REASONING_FORMAT:-auto}"
+      REASONING_BUDGET: "${REASONING_BUDGET:--1}"
+      PROMPT_CACHE_RAM: "${PROMPT_CACHE_RAM:-0}"
+      SEED: "${SEED:-42}"
+      ROUTER_GATEWAY_MODE: "${ROUTER_GATEWAY_MODE:-on}"
+      BACKEND_PORT: "${BACKEND_PORT:-8081}"
+      GATEWAY_MAX_RETRIES: "${GATEWAY_MAX_RETRIES:-2}"
+      GATEWAY_FAIL_ON_VERIFY: "${GATEWAY_FAIL_ON_VERIFY:-off}"
+
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu, compute, utility]
+
+    cap_add:
+      - IPC_LOCK
+
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s

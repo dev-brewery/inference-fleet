@@ -1,0 +1,368 @@
+services:
+  # ============================================================================
+  # STRESS-TEST STACK — Thermal validation on 2x Tesla P40
+  #
+  # 8× Qwen3-4B instances (4 per GPU) for maximum concurrent prefill
+  # Each instance: 2048 ctx × 8 slots = 32 concurrent per GPU, 64 total
+  #
+  # VRAM per GPU: 4 × (2.4 GB model + 2.25 GB KV) = 18.6 GB
+  # Headroom per GPU: 5.4 GB ✓
+  # ============================================================================
+
+  # ----------------------------- GPU 0 (4 instances) --------------------------
+
+  stress-0a:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: stress-0a
+    restart: unless-stopped
+    expose:
+      - "8080"
+    volumes:
+      - /storage/models:/models:ro
+      - ~/llm-hosts/stress-test-gpu/start-4b.sh:/start.sh:ro
+    entrypoint: ["/bin/sh", "/start.sh"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [gpu, compute, utility]
+    runtime: nvidia
+    environment:
+      NVIDIA_VISIBLE_DEVICES: "0"
+      CTX_SIZE: "4096"
+      PARALLEL_SLOTS: "4"
+      PORT: "8080"
+      THREADS: "4"
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - stress-net
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  stress-0b:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: stress-0b
+    restart: unless-stopped
+    expose:
+      - "8080"
+    volumes:
+      - /storage/models:/models:ro
+      - ~/llm-hosts/stress-test-gpu/start-4b.sh:/start.sh:ro
+    entrypoint: ["/bin/sh", "/start.sh"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [gpu, compute, utility]
+    runtime: nvidia
+    environment:
+      NVIDIA_VISIBLE_DEVICES: "0"
+      CTX_SIZE: "4096"
+      PARALLEL_SLOTS: "4"
+      PORT: "8080"
+      THREADS: "4"
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - stress-net
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  stress-0c:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: stress-0c
+    restart: unless-stopped
+    expose:
+      - "8080"
+    volumes:
+      - /storage/models:/models:ro
+      - ~/llm-hosts/stress-test-gpu/start-4b.sh:/start.sh:ro
+    entrypoint: ["/bin/sh", "/start.sh"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [gpu, compute, utility]
+    runtime: nvidia
+    environment:
+      NVIDIA_VISIBLE_DEVICES: "0"
+      CTX_SIZE: "4096"
+      PARALLEL_SLOTS: "4"
+      PORT: "8080"
+      THREADS: "4"
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - stress-net
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  stress-0d:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: stress-0d
+    restart: unless-stopped
+    expose:
+      - "8080"
+    volumes:
+      - /storage/models:/models:ro
+      - ~/llm-hosts/stress-test-gpu/start-4b.sh:/start.sh:ro
+    entrypoint: ["/bin/sh", "/start.sh"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [gpu, compute, utility]
+    runtime: nvidia
+    environment:
+      NVIDIA_VISIBLE_DEVICES: "0"
+      CTX_SIZE: "4096"
+      PARALLEL_SLOTS: "4"
+      PORT: "8080"
+      THREADS: "4"
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - stress-net
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  # ----------------------------- GPU 1 (4 instances) --------------------------
+
+  stress-1a:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: stress-1a
+    restart: unless-stopped
+    expose:
+      - "8080"
+    volumes:
+      - /storage/models:/models:ro
+      - ~/llm-hosts/stress-test-gpu/start-4b.sh:/start.sh:ro
+    entrypoint: ["/bin/sh", "/start.sh"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['1']
+              capabilities: [gpu, compute, utility]
+    runtime: nvidia
+    environment:
+      NVIDIA_VISIBLE_DEVICES: "1"
+      CTX_SIZE: "4096"
+      PARALLEL_SLOTS: "4"
+      PORT: "8080"
+      THREADS: "4"
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - stress-net
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  stress-1b:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: stress-1b
+    restart: unless-stopped
+    expose:
+      - "8080"
+    volumes:
+      - /storage/models:/models:ro
+      - ~/llm-hosts/stress-test-gpu/start-4b.sh:/start.sh:ro
+    entrypoint: ["/bin/sh", "/start.sh"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['1']
+              capabilities: [gpu, compute, utility]
+    runtime: nvidia
+    environment:
+      NVIDIA_VISIBLE_DEVICES: "1"
+      CTX_SIZE: "4096"
+      PARALLEL_SLOTS: "4"
+      PORT: "8080"
+      THREADS: "4"
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - stress-net
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  stress-1c:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: stress-1c
+    restart: unless-stopped
+    expose:
+      - "8080"
+    volumes:
+      - /storage/models:/models:ro
+      - ~/llm-hosts/stress-test-gpu/start-4b.sh:/start.sh:ro
+    entrypoint: ["/bin/sh", "/start.sh"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['1']
+              capabilities: [gpu, compute, utility]
+    runtime: nvidia
+    environment:
+      NVIDIA_VISIBLE_DEVICES: "1"
+      CTX_SIZE: "4096"
+      PARALLEL_SLOTS: "4"
+      PORT: "8080"
+      THREADS: "4"
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - stress-net
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  stress-1d:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: stress-1d
+    restart: unless-stopped
+    expose:
+      - "8080"
+    volumes:
+      - /storage/models:/models:ro
+      - ~/llm-hosts/stress-test-gpu/start-4b.sh:/start.sh:ro
+    entrypoint: ["/bin/sh", "/start.sh"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['1']
+              capabilities: [gpu, compute, utility]
+    runtime: nvidia
+    environment:
+      NVIDIA_VISIBLE_DEVICES: "1"
+      CTX_SIZE: "4096"
+      PARALLEL_SLOTS: "4"
+      PORT: "8080"
+      THREADS: "4"
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    networks:
+      - stress-net
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  # ----------------------------- Driver ---------------------------------------
+
+  stress-driver:
+    image: stress-driver:latest
+    pull_policy: never
+    container_name: stress-driver
+    restart: unless-stopped
+    ports:
+      - "8085:8080"
+    environment:
+      # GPU 0 backends
+      BACKEND_0A: "http://stress-0a:8080"
+      BACKEND_0B: "http://stress-0b:8080"
+      BACKEND_0C: "http://stress-0c:8080"
+      BACKEND_0D: "http://stress-0d:8080"
+      # GPU 1 backends
+      BACKEND_1A: "http://stress-1a:8080"
+      BACKEND_1B: "http://stress-1b:8080"
+      BACKEND_1C: "http://stress-1c:8080"
+      BACKEND_1D: "http://stress-1d:8080"
+      # Hammer config — shorter prefills for faster cycling
+      WORKERS_PER_BACKEND: "8"
+      PREFILL_TOKENS: "800"
+      MAX_OUTPUT_TOKENS: "32"
+      AUTOSTART: "1"
+    depends_on:
+      - stress-0a
+      - stress-0b
+      - stress-0c
+      - stress-0d
+      - stress-1a
+      - stress-1b
+      - stress-1c
+      - stress-1d
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8080/health',timeout=3).status==200 else 1)"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 120s
+    networks:
+      - stress-net
+    logging:
+      driver: json-file
+      options: { max-size: "20m", max-file: "3" }
+
+networks:
+  stress-net:
+    driver: bridge

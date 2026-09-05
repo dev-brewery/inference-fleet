@@ -1,0 +1,21 @@
+{
+  "task_type": "auto",
+  "goal": "Prod deploy at 09:10 UTC increased 5xx from 0.2% to 7%. Give me an immediate response plan.",
+  "constraints": [
+    "Keep response under 12 bullet points",
+    "Prioritize containment before diagnosis"
+  ],
+  "output_format": "Bulleted incident runbook",
+  "acceptance_checks": [
+    "Includes rollback/mitigation decision",
+    "Includes communications owner",
+    "Includes verification criteria"
+  ],
+  "context": [
+    "Single service affected",
+    "No DB migrations in this release"
+  ],
+  "metadata": {
+    "priority": "sev2"
+  }
+}

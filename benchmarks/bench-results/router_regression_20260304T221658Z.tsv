@@ -1,0 +1,13 @@
+id	route	attempts_used	initial_verify_pass	final_verify_pass	regex_pass	checks_missing_count	route_failures	tool_failures
+incident_triage_1	ops	1	1	1	1	0		
+sql_query_1	code	1	1	1	1	0		
+bash_log_1	code	2	0	0	0	2		
+bugfix_py_1	code	2	0	0	1	2		
+math_count_1	math_logic	2	0	0	1	1		
+clock_angle_1	math_logic	2	0	0	1	1		
+rate_problem_1	math_logic	1	1	1	1	0		
+box_logic_1	math_logic	2	0	0	1	0	math_logic_missing_numeric_signal	
+api_security_1	ops	2	0	0	1	0	ops_missing_containment_or_rollback	
+agent_router_1	planning	1	1	1	1	0		
+json_plan_1	planning	2	0	0	1	1	planning_missing_step_structure	
+code_review_1	code	2	0	0	0	1	code_sql_missing_select_from	

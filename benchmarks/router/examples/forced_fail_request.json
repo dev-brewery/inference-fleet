@@ -1,0 +1,13 @@
+{
+  "task_type": "ops",
+  "goal": "Service latency jumped from 120ms to 900ms right after deployment. Give an immediate incident response runbook.",
+  "constraints": [
+    "Keep it concise"
+  ],
+  "output_format": "Bulleted runbook",
+  "acceptance_checks": [
+    "Includes rollback",
+    "Includes owner",
+    "Must include exact token ZEBRAHASH"
+  ]
+}

@@ -1,0 +1,2 @@
+fastmcp>=3.0
+qdrant-client>=1.9

@@ -1,0 +1,426 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": { "type": "grafana", "uid": "-- Grafana --" },
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      }
+    ]
+  },
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "Model Throughput",
+      "type": "row"
+    },
+    {
+      "title": "Generation Speed (tok/s)",
+      "description": "Token generation throughput per model backend",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 1 },
+      "id": 1,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 10,
+            "pointSize": 5,
+            "showPoints": "auto"
+          },
+          "unit": "short",
+          "displayName": "${__name__}"
+        },
+        "overrides": [
+          { "matcher": { "id": "byFrameRefID", "options": "A" }, "properties": [{ "id": "displayName", "value": "GPU Model" }] },
+          { "matcher": { "id": "byFrameRefID", "options": "B" }, "properties": [{ "id": "displayName", "value": "Helper (CPU)" }] },
+          { "matcher": { "id": "byFrameRefID", "options": "C" }, "properties": [{ "id": "displayName", "value": "Classifier (CPU)" }] },
+          { "matcher": { "id": "byFrameRefID", "options": "D" }, "properties": [{ "id": "displayName", "value": "Embedding (CPU)" }] }
+        ]
+      },
+      "targets": [
+        { "expr": "llamacpp:predicted_tokens_seconds{job=\"gpu-model\"}", "refId": "A" },
+        { "expr": "llamacpp:predicted_tokens_seconds{job=\"helper\"}", "refId": "B" },
+        { "expr": "llamacpp:predicted_tokens_seconds{job=\"classifier\"}", "refId": "C" },
+        { "expr": "llamacpp:predicted_tokens_seconds{job=\"embedding\"}", "refId": "D" }
+      ]
+    },
+    {
+      "title": "Prompt Eval Speed (tok/s)",
+      "description": "Prompt processing throughput per model backend",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 1 },
+      "id": 2,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 10
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          { "matcher": { "id": "byFrameRefID", "options": "A" }, "properties": [{ "id": "displayName", "value": "GPU Model" }] },
+          { "matcher": { "id": "byFrameRefID", "options": "B" }, "properties": [{ "id": "displayName", "value": "Helper (CPU)" }] },
+          { "matcher": { "id": "byFrameRefID", "options": "C" }, "properties": [{ "id": "displayName", "value": "Classifier (CPU)" }] },
+          { "matcher": { "id": "byFrameRefID", "options": "D" }, "properties": [{ "id": "displayName", "value": "Embedding (CPU)" }] }
+        ]
+      },
+      "targets": [
+        { "expr": "llamacpp:prompt_tokens_seconds{job=\"gpu-model\"}", "refId": "A" },
+        { "expr": "llamacpp:prompt_tokens_seconds{job=\"helper\"}", "refId": "B" },
+        { "expr": "llamacpp:prompt_tokens_seconds{job=\"classifier\"}", "refId": "C" },
+        { "expr": "llamacpp:prompt_tokens_seconds{job=\"embedding\"}", "refId": "D" }
+      ]
+    },
+    {
+      "title": "Tokens Generated (cumulative)",
+      "description": "Total tokens generated per backend over time",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 9 },
+      "id": 3,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 10
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          { "matcher": { "id": "byFrameRefID", "options": "A" }, "properties": [{ "id": "displayName", "value": "GPU Model" }] },
+          { "matcher": { "id": "byFrameRefID", "options": "B" }, "properties": [{ "id": "displayName", "value": "Helper (CPU)" }] },
+          { "matcher": { "id": "byFrameRefID", "options": "C" }, "properties": [{ "id": "displayName", "value": "Classifier (CPU)" }] }
+        ]
+      },
+      "targets": [
+        { "expr": "llamacpp:tokens_predicted_total{job=\"gpu-model\"}", "refId": "A" },
+        { "expr": "llamacpp:tokens_predicted_total{job=\"helper\"}", "refId": "B" },
+        { "expr": "llamacpp:tokens_predicted_total{job=\"classifier\"}", "refId": "C" }
+      ]
+    },
+    {
+      "title": "Active Requests",
+      "description": "Currently processing and deferred requests per backend",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 9 },
+      "id": 4,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "stepAfter",
+            "fillOpacity": 30
+          },
+          "unit": "short"
+        },
+        "overrides": [
+          { "matcher": { "id": "byFrameRefID", "options": "A" }, "properties": [{ "id": "displayName", "value": "GPU Processing" }] },
+          { "matcher": { "id": "byFrameRefID", "options": "B" }, "properties": [{ "id": "displayName", "value": "GPU Deferred" }] },
+          { "matcher": { "id": "byFrameRefID", "options": "C" }, "properties": [{ "id": "displayName", "value": "Helper Processing" }] },
+          { "matcher": { "id": "byFrameRefID", "options": "D" }, "properties": [{ "id": "displayName", "value": "Classifier Processing" }] }
+        ]
+      },
+      "targets": [
+        { "expr": "llamacpp:requests_processing{job=\"gpu-model\"}", "refId": "A" },
+        { "expr": "llamacpp:requests_deferred{job=\"gpu-model\"}", "refId": "B" },
+        { "expr": "llamacpp:requests_processing{job=\"helper\"}", "refId": "C" },
+        { "expr": "llamacpp:requests_processing{job=\"classifier\"}", "refId": "D" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 17 },
+      "id": 101,
+      "title": "Resource Utilization",
+      "type": "row"
+    },
+    {
+      "title": "Container CPU Usage",
+      "description": "CPU usage per container from cAdvisor",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 18 },
+      "id": 5,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 20,
+            "stacking": { "mode": "normal" }
+          },
+          "unit": "percentunit"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "rate(container_cpu_usage_seconds_total{name=~\"(smart-proxy|qdrant|prometheus|grafana|cadvisor|node-exporter|qwen3.*|classifier.*|helper.*|embedding.*|qdrant-mcp|system-mcp)\"}[5m])",
+          "legendFormat": "{{name}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Container Memory Usage",
+      "description": "RSS memory per container from cAdvisor",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 18 },
+      "id": 6,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 20,
+            "stacking": { "mode": "normal" }
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "container_memory_rss{name=~\"(smart-proxy|qdrant|prometheus|grafana|cadvisor|node-exporter|qwen3.*|classifier.*|helper.*|embedding.*|qdrant-mcp|system-mcp)\"}",
+          "legendFormat": "{{name}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Host CPU Usage",
+      "description": "Overall host CPU utilization from node-exporter",
+      "type": "gauge",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 26 },
+      "id": 7,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.7 },
+              { "color": "red", "value": 0.9 }
+            ]
+          },
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "1 - avg(rate(node_cpu_seconds_total{mode=\"idle\"}[5m]))",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Host Memory Usage",
+      "description": "System RAM utilization from node-exporter",
+      "type": "gauge",
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 26 },
+      "id": 8,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.7 },
+              { "color": "red", "value": 0.9 }
+            ]
+          },
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Disk Usage",
+      "description": "Root filesystem usage from node-exporter",
+      "type": "gauge",
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 26 },
+      "id": 9,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.7 },
+              { "color": "red", "value": 0.9 }
+            ]
+          },
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1
+        },
+        "overrides": []
+      },
+      "targets": [
+        {
+          "expr": "1 - (node_filesystem_avail_bytes{mountpoint=\"/\"} / node_filesystem_size_bytes{mountpoint=\"/\"})",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Network I/O",
+      "description": "Host network throughput",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 26 },
+      "id": 10,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 10
+          },
+          "unit": "Bps"
+        },
+        "overrides": [
+          { "matcher": { "id": "byFrameRefID", "options": "A" }, "properties": [{ "id": "displayName", "value": "Received" }] },
+          { "matcher": { "id": "byFrameRefID", "options": "B" }, "properties": [{ "id": "displayName", "value": "Transmitted" }] }
+        ]
+      },
+      "targets": [
+        { "expr": "rate(node_network_receive_bytes_total{device!~\"lo|veth.*|br-.*|docker.*\"}[5m])", "refId": "A" },
+        { "expr": "rate(node_network_transmit_bytes_total{device!~\"lo|veth.*|br-.*|docker.*\"}[5m])", "refId": "B" }
+      ]
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 32 },
+      "id": 102,
+      "title": "Service Health",
+      "type": "row"
+    },
+    {
+      "title": "Scrape Targets Status",
+      "description": "Which Prometheus targets are UP (1) or DOWN (0)",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 24, "x": 0, "y": 33 },
+      "id": 11,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          },
+          "mappings": [
+            { "options": { "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" } }, "type": "value" }
+          ]
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "horizontal",
+        "textMode": "auto",
+        "colorMode": "background"
+      },
+      "targets": [
+        {
+          "expr": "up",
+          "legendFormat": "{{job}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Current Throughput (tok/s)",
+      "description": "Live generation speed gauges",
+      "type": "stat",
+      "gridPos": { "h": 4, "w": 24, "x": 0, "y": 37 },
+      "id": 12,
+      "datasource": { "type": "prometheus", "uid": "PBFA97CFB590B2093" },
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 5 },
+              { "color": "green", "value": 10 }
+            ]
+          },
+          "unit": "short",
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "horizontal",
+        "textMode": "auto",
+        "colorMode": "value"
+      },
+      "targets": [
+        { "expr": "llamacpp:predicted_tokens_seconds{job=\"gpu-model\"}", "legendFormat": "GPU", "refId": "A" },
+        { "expr": "llamacpp:predicted_tokens_seconds{job=\"helper\"}", "legendFormat": "Helper", "refId": "B" },
+        { "expr": "llamacpp:predicted_tokens_seconds{job=\"classifier\"}", "legendFormat": "Classifier", "refId": "C" },
+        { "expr": "llamacpp:predicted_tokens_seconds{job=\"embedding\"}", "legendFormat": "Embedding", "refId": "D" }
+      ]
+    }
+  ],
+  "schemaVersion": 39,
+  "tags": ["llm-stack", "ecosystem"],
+  "templating": { "list": [] },
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "LLM Ecosystem",
+  "uid": "llm-ecosystem",
+  "version": 1
+}

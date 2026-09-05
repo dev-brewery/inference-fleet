@@ -1,0 +1,69 @@
+{
+  "candidate_id": "20260305T113940Z_versioning-smoke",
+  "created_utc": "20260305T113940Z",
+  "label": "versioning-smoke",
+  "notes": "initial smoke check",
+  "root": "~/llm-hosts/deeply-tuned",
+  "tracked_files": [
+    ".env",
+    "profiles/production.env",
+    "start.sh",
+    "docker-compose.yml",
+    "README.md",
+    "IMPLEMENTATION_PLAN.md",
+    "EXECUTION_CHECKLIST.md"
+  ],
+  "missing_files": [],
+  "file_hashes": {
+    ".env": "3378396a05bf26177168b2d4275581763adea340f3df2b0e30622c096350e14d",
+    "profiles/production.env": "3378396a05bf26177168b2d4275581763adea340f3df2b0e30622c096350e14d",
+    "start.sh": "2956f2cd6ecdc04c74848c3ee8c230efb8b831dc4a035e20e79a89981263dfe0",
+    "docker-compose.yml": "3274534e2c6258a180156d42acebff25e3cb7e8dc97643758e87c80be81abc03",
+    "README.md": "c5d1e8d1df30fbc6156e066bf3f4bef62448ff1d6d84d9a780ab229d0f7b4d43",
+    "IMPLEMENTATION_PLAN.md": "5f7f20a4c5b30bda166df94ddcb2cd1d6a761b7c4b79a57d69ed3739843f9ecc",
+    "EXECUTION_CHECKLIST.md": "993c47eaafd73242c3230df241c1c95abf83ed1f3349f30cd5f7bd61b6ff9159"
+  },
+  "diagnostics": {
+    "date_utc": {
+      "cmd": "date -u",
+      "rc": "0",
+      "stdout": "Thu Mar  5 11:39:40 UTC 2026",
+      "stderr": ""
+    },
+    "docker_ps": {
+      "cmd": "docker ps --format {{.Names}}\t{{.Status}}",
+      "rc": "0",
+      "stdout": "deeply-tuned-server\tUp 9 hours (healthy)\ngrafana\tUp 36 hours\ncadvisor\tUp 36 hours (healthy)\nprometheus\tUp 36 hours\nnode-exporter\tUp 36 hours\nportainer\tUp 9 days",
+      "stderr": ""
+    },
+    "nvidia_smi": {
+      "cmd": "nvidia-smi --query-gpu=index,name,utilization.gpu,memory.used,memory.free,power.draw --format=csv,noheader",
+      "rc": "0",
+      "stdout": "0, Tesla P40, 0 %, 16444 MiB, 6468 MiB, 50.24 W\n1, Tesla P40, 0 %, 16316 MiB, 6596 MiB, 51.84 W",
+      "stderr": ""
+    }
+  },
+  "status": "fail",
+  "evaluation": {
+    "evaluated_utc": "20260305T115130Z",
+    "status": "fail",
+    "metrics_path": "~/llm-hosts/deeply-tuned/versioning/metrics.example.json",
+    "metrics": {
+      "openwebui_report_path": "/abs/path/openwebui_test_report_YYYYMMDDTHHMMSSZ.json",
+      "openwebui_tests_passed": true,
+      "stream_success_rate": 99.4,
+      "real_requests_pass_at_2": 82.1,
+      "gen_tps": 10.1
+    },
+    "evidence": {},
+    "gates": {
+      "openwebui_tests_passed": true,
+      "stream_success_rate_min": 99.0,
+      "real_requests_pass_at_2_min": 80.0,
+      "gen_tps_min": 9.0
+    },
+    "failures": [
+      "openwebui report not found: /abs/path/openwebui_test_report_YYYYMMDDTHHMMSSZ.json"
+    ]
+  }
+}

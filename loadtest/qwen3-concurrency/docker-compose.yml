@@ -1,0 +1,127 @@
+services:
+  # ============================================================================
+  # qwen3-concurrency — Thermal stress test with dense 30B model
+  #
+  # 1× qwen3-30b-thinking per GPU (2 containers total)
+  # Dense model = all parameters active = maximum compute = maximum power
+  #
+  # VRAM per GPU:
+  #   Model:     19.0 GB
+  #   KV cache:   1.5 GB (6144 ctx × 256 KB/token)
+  #   Buffers:   ~0.3 GB
+  #   Total:    ~20.8 GB
+  #   Headroom:  ~3.2 GB ✓
+  #
+  # Concurrency: 6 slots × 2 GPUs = 12 concurrent prefills
+  # ============================================================================
+
+  qwen3-gpu0:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: qwen3-gpu0
+    restart: unless-stopped
+    expose:
+      - "8080"
+    volumes:
+      - /storage/models:/models:ro
+      - ~/llm-hosts/qwen3-concurrency/start.sh:/start.sh:ro
+    entrypoint: ["/bin/sh", "/start.sh"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['0']
+              capabilities: [gpu, compute, utility]
+    runtime: nvidia
+    environment:
+      NVIDIA_VISIBLE_DEVICES: "0"
+      CTX_SIZE: "6144"
+      PARALLEL_SLOTS: "6"
+      BATCH_SIZE: "2048"
+      THREADS: "8"
+      PORT: "8080"
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    networks:
+      - qwen3-net
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  qwen3-gpu1:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: qwen3-gpu1
+    restart: unless-stopped
+    expose:
+      - "8080"
+    volumes:
+      - /storage/models:/models:ro
+      - ~/llm-hosts/qwen3-concurrency/start.sh:/start.sh:ro
+    entrypoint: ["/bin/sh", "/start.sh"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['1']
+              capabilities: [gpu, compute, utility]
+    runtime: nvidia
+    environment:
+      NVIDIA_VISIBLE_DEVICES: "1"
+      CTX_SIZE: "6144"
+      PARALLEL_SLOTS: "6"
+      BATCH_SIZE: "2048"
+      THREADS: "8"
+      PORT: "8080"
+    ulimits:
+      memlock: { soft: -1, hard: -1 }
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    networks:
+      - qwen3-net
+    logging:
+      driver: json-file
+      options: { max-size: "10m", max-file: "3" }
+
+  qwen3-driver:
+    image: qwen3-concurrency-driver:latest
+    pull_policy: never
+    container_name: qwen3-driver
+    restart: unless-stopped
+    ports:
+      - "8086:8080"
+    environment:
+      BACKEND_0: "http://qwen3-gpu0:8080"
+      BACKEND_1: "http://qwen3-gpu1:8080"
+      WORKERS_PER_BACKEND: "6"
+      PREFILL_TOKENS: "800"
+      MAX_OUTPUT_TOKENS: "64"
+      AUTOSTART: "1"
+    depends_on:
+      - qwen3-gpu0
+      - qwen3-gpu1
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:8080/health',timeout=5).status==200 else 1)"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 180s
+    networks:
+      - qwen3-net
+    logging:
+      driver: json-file
+      options: { max-size: "20m", max-file: "3" }
+
+networks:
+  qwen3-net:
+    driver: bridge
