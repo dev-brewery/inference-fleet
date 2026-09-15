@@ -18,6 +18,39 @@ AMD EPYC 7302 (16c/32t), 128 GB DDR4-2666 ECC, 2x NVIDIA Tesla P40 (24 GB, compu
 - **mcp-servers/**: two MCP servers exposing vector search (Qdrant) and system state (GPU, containers, disk) so agents can self-diagnose.
 - **experiments/**: the vLLM-on-Pascal attempt, kept because a ruled-out experiment is evidence, not failure.
 
+## Architecture
+
+```
+clients / agents
+      |
+      v
+smart-proxy (companion repo): aliasing, tiers, quality gate
+      |
+      +---------------------------+
+      |                           |
+      v                           v
+GPU stacks (stacks/)         CPU tier + cloud fallback
+one resident at a time,
+swapped via Portainer API
+      |
+      v
+monitoring/ (Prometheus, Grafana, cAdvisor)
+independent of GPU swaps; benchmarks/ gates promotion
+```
+
+## Using this repo
+
+This is an operational record, published as evidence rather than a setup
+guide; nothing here installs with one command. If you want to reproduce a
+stack: pick a directory under `stacks/`, read the dated A/B evidence in its
+`start.sh` header, run its `build.sh` against your own llama.cpp checkout,
+copy `.env.example` to `.env`, then bring it up with its compose file. The
+benchmark harness under `benchmarks/` runs standalone: fixed-seed MCQ suite
+first, then the promotion ledger rules in `versioning/`.
+
 ## Provenance
 
 Everything here ran (or runs) in production on the box described above. Secrets, keys, and internal addresses are scrubbed; `.env.example` files mark what you'd fill in. Model weights are obviously not included. Dated measurements reference the files they were recorded in; where something was never tested, the docs say so.
+
+Code and scripts are MIT licensed (see LICENSE); findings docs describe one
+specific production box and carry no warranty of general applicability.
